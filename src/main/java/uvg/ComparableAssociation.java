@@ -1,94 +1,71 @@
-// A class for structuring associations that may be compared.
-// (c) 1998, 2001 duane a. bailey
-package structure5;
-import java.util.Map;
+package uvg;
+
 /**
- * A class implementing a comparable key-value pair.  This class associates an 
- * immutable key with a mutable value.  Useful for many other structures.
- * Example usage:
- * <P>
- * To print out a list of professors sorted by the number of classes
- * a particular student took from each, we could use the following:
- * <pre>
- * public static void main(String[] argv){
- *      //initialize a new fib heap
- *      FibHeap classesTaken = new FibHeap();
+ * Clase que representa una asociación entre una clave y un valor
+ * que puede ser comparada con otras asociaciones.
+ * 
+ * @param <K> Tipo de la clave, debe implementar la interfaz Comparable.
+ * @param <V> Tipo del valor asociado a la clave.
  *
- *      //add professors and classes taken to a heap
- *      classesTaken.add(new {@link #ComparableAssociation(Comparable, Object) ComparableAssociation(new Integer(5), "Andrea")});
- *      classesTaken.add(new ComparableAssociation(new Integer(1), "Barbara"));
- *      classesTaken.add(new ComparableAssociation(new Integer(3), "Bill"));
- *      classesTaken.add(new ComparableAssociation(new Integer(2), "Duane"));   
- *      classesTaken.add(new ComparableAssociation(new Integer(1), "Tom"));     
- *
- *      //print out classes taken
- *      while(!classesTaken.isEmpty()){
- *          ComparableAssociation p = (ComparableAssociation)classesTaken.remove();
- *          System.out.println(p.{@link #getValue() getValue()} + " is " + p.{@link #getKey() getKey()} + " years old.");
- *      }
- * }
- * </pre>  
- * @version $Id: ComparableAssociation.java 34 2007-08-09 14:43:44Z bailey $
- * @author, 2001 duane a. bailey
+ * Esta clase es útil en estructuras de datos como árboles binarios
+ * o montículos, donde los elementos deben mantener un orden.
  */
-public class ComparableAssociation<K extends Comparable<K>,V>
-    extends Association<K,V>
-    implements Comparable<ComparableAssociation<K,V>>
-    , Map.Entry<K,V>
-{
+public class ComparableAssociation<K extends Comparable<K>, V> extends Association<K, V>
+        implements Comparable<ComparableAssociation<K, V>>, java.util.Map.Entry<K, V> {
+
     /**
-     * Construct an association that can be ordered, from only a key.
-     * The value is set to null.
+     * Construye una asociación comparable con una clave y un valor.
      *
-     * @pre key is non-null
-     * @post constructs comparable association with null value
-     * 
-     * @param key The (comparable) key.
+     * @param key   La clave de la asociación, no puede ser nula.
+     * @param value El valor asociado a la clave (puede ser nulo).
+     * @throws IllegalArgumentException si la clave es nula.
      */
-    public ComparableAssociation(K key)
-    {
-        this(key,null);
+    public ComparableAssociation(K key, V value) {
+        super(key, value);
+        if (key == null) {
+            throw new IllegalArgumentException("La clave no puede ser nula");
+        }
     }
 
     /**
-     * Construct a key-value association that can be ordered.
+     * Compara esta asociación con otra basada en las claves.
      *
-     * @pre key is non-null
-     * @post constructs association between a comparable key and a value
-     * 
-     * @param key The (comparable) key.
-     * @param value The (possibly comparable) associated value.
+     * @param other Otra instancia de ComparableAssociation con la cual comparar.
+     * @return Un número negativo si esta clave es menor, cero si son iguales,
+     *         o un número positivo si es mayor.
+     * @throws NullPointerException si la otra asociación es nula.
      */
-    public ComparableAssociation(K key, V value)
-    {
-        super(key,value);
+    @Override
+    public int compareTo(ComparableAssociation<K, V> other) {
+        if (other == null) {
+            throw new NullPointerException("La asociación a comparar no puede ser nula");
+        }
+        return this.getKey().compareTo(other.getKey());
     }
 
     /**
-     * Determine the order of two comparable associations, based on key.
+     * Devuelve una representación en cadena de la asociación.
      *
-     * @pre other is non-null ComparableAssociation
-     * @post returns integer representing relation between values
-     * 
-     * @param other The other comparable association.
-     * @return Value less-than equal to or greater than zero based on comparison
+     * @return Una cadena que representa la clave y el valor de la asociación.
      */
-    public int compareTo(ComparableAssociation<K,V> that)
-    {
-        return this.getKey().compareTo(that.getKey());
+    @Override
+    public String toString() {
+        return "(" + getKey() + ", " + getValue() + ")";
     }
 
     /**
-     * Construct a string representation of the ComparableAssociation.
+     * Establece un nuevo valor para la asociación.
      *
-     * @post returns string representation
-     * 
-     * @return The string representing the ComparableAssociation.
+     * @param value El nuevo valor a asociar con la clave.
+     * @return El valor anterior asociado a la clave.
      */
-    public String toString()
-    {
-        StringBuffer s = new StringBuffer();
-        s.append("<ComparableAssociation: "+getKey()+"="+getValue()+">");
-        return s.toString();
+    @Override
+    public V setValue(V value) {
+        V oldValue = getValue();
+        super.setValue(value);  // Esto cambia el valor en la clase base.
+        return oldValue;  // Estás devolviendo un valor de tipo V.
     }
-}
+    
+
+    
+} 
